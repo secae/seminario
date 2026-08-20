@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Certificados – Seminario Básico de Certificación Aeronáutica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  
+  
+<style>
+  :root{
+    --navy:#061426;
+    --navy-2:#081a2e;
+    --navy-3:#0d2239;
+    --panel:#0c2036;
+    --panel-soft:rgba(12,32,54,.86);
+    --border:#294766;
+    --border-soft:rgba(77,116,151,.24);
+    --accent:#0ea5e9;
+    --gold:#f2b63d;
+    --gold-2:#ffd778;
+    --green:#22c55e;
+    --red:#ef4444;
+    --amber:#f59e0b;
+    --text:#f4f8fb;
+    --text-dim:#9eb6ca;
+    --mono:'Share Tech Mono',monospace;
+    --head:'Rajdhani',sans-serif;
+    --body:'Source Sans 3',sans-serif;
+    --shadow:0 30px 80px rgba(0,0,0,.30);
+  }
+
+  body.light-theme{
+    --navy:#eef4f9;
+    --navy-2:#e6eef5;
+    --navy-3:#dde8f1;
+    --panel:#ffffff;
+    --panel-soft:rgba(255,255,255,.9);
+    --border:#b9c9d8;
+    --border-soft:rgba(89,116,139,.18);
+    --text:#122437;
+    --text-dim:#5b7387;
+    --shadow:0 26px 65px rgba(29,51,71,.13);
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    min-height:100vh;
+    font-family:var(--body);
+    color:var(--text);
+    background:
+      radial-gradient(circle at 76% 14%,rgba(14,165,233,.12),transparent 25%),
+      linear-gradient(180deg,var(--navy) 0%,#07182a 48%,var(--navy) 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:0 18px 48px;
+    overflow-x:hidden;
+    transition:.3s ease;
+  }
+
+  body.light-theme{
+    background:
+      radial-gradient(circle at 76% 14%,rgba(14,165,233,.07),transparent 24%),
+      linear-gradient(180deg,#eef4f8,#f8fbfd 52%,#eef4f8);
+  }
+
+  /* Marco general / interfaz */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    background:
+      linear-gradient(90deg,transparent calc(50% - 1px),rgba(14,165,233,.035) 50%,transparent calc(50% + 1px)),
+      repeating-linear-gradient(0deg,transparent 0 39px,rgba(100,130,160,.035) 40px);
+  }
+
+  body::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;top:0;
+    height:82px;
+    background:rgba(4,16,30,.78);
+    border-bottom:1px solid rgba(119,151,181,.16);
+    backdrop-filter:blur(12px);
+    z-index:0;
+  }
+  body.light-theme::after{background:rgba(255,255,255,.82)}
+
+  .theme-toggle-btn{
+    position:fixed;
+    top:20px;
+    right:22px;
+    z-index:100;
+    background:rgba(8,26,46,.72);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    padding:8px 12px;
+    border-radius:8px;
+    font-family:var(--head);
+    font-weight:700;
+    letter-spacing:.04em;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+    transition:.2s ease;
+  }
+  body.light-theme .theme-toggle-btn{background:rgba(255,255,255,.8)}
+  .theme-toggle-btn:hover{
+    color:var(--gold);
+    border-color:var(--gold);
+    transform:translateY(-1px);
+  }
+
+  /* HERO */
+  .site-header{
+    width:min(100%,1040px);
+    min-height:530px;
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-end;
+    flex-direction:column;
+    text-align:left;
+    padding-bottom:72px;
+    margin-bottom:-34px;
+    overflow:visible;
+    animation:fadeDown .6s ease both;
+  }
+
+  .site-header::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:82px;
+    width:100vw;
+    height:390px;
+    transform:translateX(-50%);
+    z-index:-3;
+    background:
+      linear-gradient(90deg,rgba(4,16,30,.98) 0%,rgba(4,16,30,.84) 33%,rgba(4,16,30,.46) 65%,rgba(4,16,30,.85) 100%),
+      radial-gradient(circle at 76% 50%,rgba(14,165,233,.20),transparent 20%),
+      linear-gradient(180deg,#081827 0%,#0a1f34 60%,#071728 100%);
+    border-bottom:1px solid rgba(14,165,233,.18);
+    box-shadow:inset 0 -80px 95px rgba(2,10,20,.78);
+  }
+
+  /* radar / aeronáutica */
+  .site-header::after{
+    content:"";
+    position:absolute;
+    right:-40px;
+    top:118px;
+    width:360px;
+    height:360px;
+    z-index:-2;
+    border-radius:50%;
+    opacity:.24;
+    background:
+      radial-gradient(circle at center,transparent 0 31%,rgba(14,165,233,.18) 31.5% 32%,transparent 32.5% 53%,rgba(14,165,233,.14) 53.5% 54%,transparent 54.5% 72%,rgba(14,165,233,.10) 72.5% 73%,transparent 73.5%),
+      linear-gradient(90deg,transparent 49.8%,rgba(14,165,233,.35) 50%,transparent 50.2%),
+      linear-gradient(0deg,transparent 49.8%,rgba(14,165,233,.35) 50%,transparent 50.2%);
+    border:1px solid rgba(14,165,233,.24);
+    box-shadow:0 0 70px rgba(14,165,233,.08);
+  }
+
+  .logo-wrap{
+    position:absolute;
+    top:0;
+    left:0;
+    height:82px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:14px;
+    margin:0;
+  }
+  .logo-wrap img{
+    height:48px;
+    width:auto;
+    filter:drop-shadow(0 7px 16px rgba(0,0,0,.25));
+  }
+  .logo-wrap>div{display:flex;flex-direction:column;align-items:flex-start}
+  .site-title{
+    font-family:var(--head);
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:.18em;
+    color:var(--text);
+    line-height:1;
+  }
+  .site-sub{
+    margin-top:7px;
+    font-size:14px;
+    color:var(--text-dim);
+    letter-spacing:.025em;
+    text-transform:none;
+  }
+
+  .divider{
+    width:auto;
+    margin:0;
+    position:absolute;
+    left:0;
+    bottom:185px;
+    display:block;
+  }
+  .divider::before{
+    content:"CERTIFICACIÓN AERONÁUTICA";
+    display:block;
+    position:absolute;
+    left:0;
+    top:62px;
+    width:min(830px,92vw);
+    font-family:var(--head);
+    font-size:clamp(42px,6.4vw,72px);
+    line-height:.90;
+    font-weight:700;
+    letter-spacing:.015em;
+    text-transform:uppercase;
+    color:var(--text);
+    text-shadow:0 12px 34px rgba(0,0,0,.38);
+  }
+  .divider::after{
+    content:"PORTAL DE CERTIFICADOS";
+    display:inline-block;
+    padding:8px 18px;
+    border:1px solid rgba(242,182,61,.65);
+    border-radius:999px;
+    color:var(--gold);
+    background:rgba(6,20,38,.52);
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    box-shadow:inset 0 0 18px rgba(242,182,61,.03);
+  }
+  .divider-icon{display:none}
+  .divider::before,.divider::after{box-sizing:border-box}
+
+  /* texto descriptivo adicional con look editorial */
+  .site-header .divider{
+    filter:none;
+  }
+  .site-header .divider::selection{background:var(--gold);color:#071426}
+
+  /* panel principal */
+  .card{
+    width:min(100%,1040px);
+    position:relative;
+    z-index:3;
+    border:1px solid rgba(79,112,143,.34);
+    border-radius:18px;
+    padding:38px 38px 34px;
+    background:
+      linear-gradient(180deg,rgba(255,255,255,.02),transparent 24%),
+      linear-gradient(180deg,rgba(13,34,57,.96),rgba(7,25,43,.98));
+    box-shadow:var(--shadow),0 0 0 1px rgba(14,165,233,.025);
+    overflow:hidden;
+    backdrop-filter:blur(12px);
+    animation:fadeUp .7s ease both;
+  }
+  body.light-theme .card{
+    background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(247,250,252,.99));
+  }
+
+  .card::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:4px;
+    background:linear-gradient(90deg,var(--gold) 0 24%,rgba(242,182,61,.12) 46%,transparent 74%);
+  }
+
+  .card::after{
+    content:"";
+    position:absolute;
+    right:-72px;
+    bottom:-82px;
+    width:250px;
+    height:250px;
+    border-radius:50%;
+    border:1px solid rgba(14,165,233,.08);
+    box-shadow:
+      0 0 0 28px rgba(14,165,233,.025),
+      0 0 0 56px rgba(14,165,233,.018);
+    pointer-events:none;
+  }
+
+  .card form::before{
+    content:"CONSULTA DE CERTIFICADOS";
+    display:block;
+    font-family:var(--head);
+    font-size:clamp(27px,3.3vw,38px);
+    font-weight:700;
+    letter-spacing:.035em;
+    color:var(--text);
+    padding:0;
+    margin:0 0 5px;
+    border:0;
+  }
+  .card form::after{
+    content:"Localice su certificado mediante el seminario y número de identificación.";
+    display:block;
+    font-size:16px;
+    color:var(--text-dim);
+    margin-bottom:30px;
+  }
+
+  form{
+    position:relative;
+    z-index:2;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0 22px;
+  }
+  form::before,form::after,.status-strip,.submit-btn{grid-column:1/-1}
+
+  .field-group{
+    margin-bottom:22px;
+    position:relative;
+  }
+
+  label{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom:9px;
+    font-family:var(--head);
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.025em;
+    color:var(--text);
+    text-transform:none;
+  }
+
+  label .label-num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:25px;height:25px;
+    border-radius:6px;
+    border:1px solid rgba(242,182,61,.68);
+    color:var(--gold);
+    background:rgba(242,182,61,.055);
+    font-family:var(--mono);
+    font-size:10px;
+    flex-shrink:0;
+  }
+
+  input[type="text"]{
+    width:100%;
+    padding:15px 16px;
+    font-family:var(--body);
+    font-size:16px;
+    color:var(--text);
+    background:rgba(5,21,37,.82);
+    border:1px solid #2c4964;
+    border-radius:9px;
+    outline:none;
+    transition:.2s ease;
+  }
+  body.light-theme input[type="text"]{background:#f7fafc}
+  input[type="text"]:hover{border-color:#426788}
+  input[type="text"]:focus{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(242,182,61,.10);
+    transform:translateY(-1px);
+  }
+  input[type="text"]::placeholder{color:#6f879c}
+
+  .search-select-container{position:relative}
+  .search-select-input{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f2b63d' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 16px center;
+    padding-right:42px!important;
+    cursor:pointer;
+  }
+
+  .search-select-dropdown{
+    position:absolute;
+    top:calc(100% + 6px);
+    left:0;
+    width:100%;
+    max-height:230px;
+    overflow-y:auto;
+    z-index:50;
+    display:none;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:9px;
+    box-shadow:0 18px 42px rgba(0,0,0,.36);
+  }
+  .search-select-option{
+    padding:12px 16px;
+    font-size:14px;
+    color:var(--text);
+    cursor:pointer;
+    transition:.15s ease;
+    border-bottom:1px solid rgba(77,116,151,.12);
+  }
+  .search-select-option:last-child{border-bottom:0}
+  .search-select-option:hover{
+    background:var(--navy-2);
+    color:var(--gold);
+    padding-left:20px;
+  }
+  .search-select-option.no-results{color:var(--text-dim);cursor:default}
+
+  .status-strip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:-5px 0 22px;
+    padding:9px 11px;
+    border:1px solid rgba(71,106,137,.19);
+    border-radius:8px;
+    background:rgba(14,165,233,.022);
+    color:var(--text-dim);
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.03em;
+  }
+  .status-dot{
+    width:7px;height:7px;
+    border-radius:50%;
+    background:var(--text-dim);
+    box-shadow:0 0 9px currentColor;
+  }
+  .status-dot.loading-dot{background:var(--amber);animation:pulse 1s ease infinite}
+  .status-dot.ok{background:var(--green)}
+  .status-dot.fail{background:var(--red)}
+
+  .submit-btn{
+    width:100%;
+    padding:16px 18px;
+    border:1px solid #f6c04d;
+    border-radius:9px;
+    color:#07192b;
+    background:
+      linear-gradient(180deg,rgba(255,255,255,.22),transparent),
+      linear-gradient(135deg,#efab1d,#ffd05b);
+    font-family:var(--head);
+    font-size:17px;
+    font-weight:700;
+    letter-spacing:.10em;
+    text-transform:uppercase;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 14px 30px rgba(242,182,61,.15);
+    transition:.2s ease;
+  }
+  .submit-btn::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-25%;
+    width:15%;
+    height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+    transform:skewX(-18deg);
+    transition:left .45s ease;
+  }
+  .submit-btn:hover:not(:disabled)::after{left:110%}
+  .submit-btn:hover:not(:disabled){
+    transform:translateY(-2px);
+    box-shadow:0 17px 36px rgba(242,182,61,.23);
+  }
+  .submit-btn:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}
+
+  .loading-bar{
+    display:none;
+    height:3px;
+    margin-top:17px;
+    overflow:hidden;
+    border-radius:999px;
+    background:#203a53;
+  }
+  .loading-bar.visible{display:block}
+  .loading-bar-fill{
+    width:40%;
+    height:100%;
+    background:linear-gradient(90deg,var(--gold),var(--gold-2),var(--gold));
+    animation:slide 1.15s ease infinite;
+  }
+
+  .result{
+    display:none;
+    margin-top:26px;
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid transparent;
+    animation:fadeUp .4s ease;
+    background:rgba(255,255,255,.015);
+  }
+  .result-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 18px;
+    font-family:var(--head);
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:.05em;
+  }
+  .result-body{padding:18px}
+  .result.success{border-color:rgba(34,197,94,.30);background:rgba(34,197,94,.035)}
+  .result.success .result-header{background:rgba(34,197,94,.09);color:var(--green);border-bottom:1px solid rgba(34,197,94,.18)}
+  .result.error{border-color:rgba(239,68,68,.30);background:rgba(239,68,68,.035)}
+  .result.error .result-header{background:rgba(239,68,68,.09);color:var(--red);border-bottom:1px solid rgba(239,68,68,.18)}
+
+  .pdf-wrap{
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:14px;
+    box-shadow:0 12px 30px rgba(0,0,0,.16);
+  }
+  .pdf-wrap iframe{
+    width:100%;
+    height:clamp(320px,58vw,540px);
+    display:block;
+    border:0;
+    background:#1a1a2e;
+  }
+
+  .download-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 20px;
+    border-radius:9px;
+    text-decoration:none;
+    font-family:var(--head);
+    font-size:15px;
+    font-weight:700;
+    color:#fff;
+    background:linear-gradient(135deg,#15803d,#22c55e);
+    transition:.15s ease;
+  }
+  .download-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 9px 22px rgba(34,197,94,.24);
+  }
+
+  .error-list{list-style:none;margin-top:10px}
+  .error-list li{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    padding:7px 0;
+    color:var(--text-dim);
+    font-size:14px;
+    border-bottom:1px solid rgba(239,68,68,.08);
+  }
+  .error-list li:last-child{border-bottom:none}
+  .error-list li::before{content:"›";color:var(--red)}
+
+  .site-footer{
+    width:min(100%,1040px);
+    position:relative;
+    z-index:1;
+    margin-top:24px;
+    text-align:center;
+  }
+  .site-footer a{
+    display:inline-block;
+    padding:8px 14px;
+    color:var(--text-dim);
+    text-decoration:none;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.11em;
+    transition:.2s;
+  }
+  .site-footer a:hover{color:var(--gold)}
+
+  @media(max-width:760px){
+    body{padding:0 10px 38px}
+    body::after{height:78px}
+    .theme-toggle-btn{top:19px;right:12px;font-size:11px}
+    .site-header{
+      min-height:515px;
+      padding-bottom:68px;
+    }
+    .site-header::before{top:78px;height:385px}
+    .site-header::after{
+      top:132px;
+      right:-100px;
+      width:300px;height:300px;
+    }
+    .logo-wrap{
+      height:78px;
+      max-width:72%;
+    }
+    .logo-wrap img{height:42px}
+    .site-title{font-size:18px}
+    .site-sub{font-size:12px}
+    .divider{bottom:195px}
+    .divider::after{
+      font-size:10px;
+      padding:7px 13px;
+      letter-spacing:.17em;
+    }
+    .divider::before{
+      top:55px;
+      font-size:clamp(38px,11vw,54px);
+      width:92vw;
+      line-height:.92;
+    }
+    .card{
+      padding:30px 20px 26px;
+      border-radius:14px;
+    }
+    form{
+      grid-template-columns:1fr;
+      gap:0;
+    }
+    form::before,form::after,.status-strip,.submit-btn{grid-column:1}
+    .card form::after{font-size:15px}
+  }
+
+  @media(max-width:430px){
+    .site-header{min-height:500px}
+    .site-header::before{height:370px}
+    .site-header::after{opacity:.18}
+    .divider{bottom:185px}
+    .divider::before{font-size:39px}
+    .card{padding:27px 17px 24px}
+    .card form::before{font-size:27px}
+    .submit-btn{font-size:15px;letter-spacing:.075em}
+  }
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+  @keyframes slide{0%{transform:translateX(-110%)}100%{transform:translateX(310%)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* ===== HERO AERONÁUTICO CINEMÁTICO ===== */
+  .site-header::before{
+    background:
+      linear-gradient(90deg, rgba(3,14,27,.98) 0%, rgba(4,16,30,.78) 35%, rgba(4,16,30,.30) 65%, rgba(4,16,30,.84) 100%),
+      radial-gradient(circle at 68% 38%, rgba(14,165,233,.18), transparent 28%),
+      linear-gradient(180deg,#071625 0%,#0a2137 60%,#071727 100%) !important;
+  }
+
+  .site-header{
+    isolation:isolate;
+  }
+
+  .site-header .logo-wrap::after{
+    content:"";
+    position:fixed;
+    left:50%;
+    top:82px;
+    width:100vw;
+    height:395px;
+    transform:translateX(-50%);
+    z-index:-2;
+    pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%201200%20500%27%3E%0A%3Cdefs%3E%0A%20%20%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20x2%3D%270%27%20y1%3D%270%27%20y2%3D%271%27%3E%0A%20%20%20%20%3Cstop%20offset%3D%270%27%20stop-color%3D%27%238bc8ff%27%20stop-opacity%3D%27.34%27/%3E%0A%20%20%20%20%3Cstop%20offset%3D%27.55%27%20stop-color%3D%27%232d6fa3%27%20stop-opacity%3D%27.22%27/%3E%0A%20%20%20%20%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23071426%27%20stop-opacity%3D%270%27/%3E%0A%20%20%3C/linearGradient%3E%0A%20%20%3Cfilter%20id%3D%27b%27%3E%3CfeGaussianBlur%20stdDeviation%3D%272.2%27/%3E%3C/filter%3E%0A%3C/defs%3E%0A%3Cg%20transform%3D%27translate%28600%20260%29%27%20fill%3D%27url%28%23g%29%27%20stroke%3D%27%2378bdf0%27%20stroke-opacity%3D%27.18%27%3E%0A%20%20%3Cpath%20d%3D%27M0-185%20L36-35%20L260%2025%20L270%2060%20L58%2040%20L35%20175%20L8%20175%20L0%2064%20L-8%20175%20L-35%20175%20L-58%2040%20L-270%2060%20L-260%2025%20L-36-35%20Z%27/%3E%0A%20%20%3Cellipse%20cx%3D%270%27%20cy%3D%275%27%20rx%3D%2752%27%20ry%3D%27165%27%20fill%3D%27%236fa8cf%27%20fill-opacity%3D%27.12%27%20stroke%3D%27none%27/%3E%0A%20%20%3Cpath%20d%3D%27M-15-170%20L0-222%20L15-170%20Z%27%20fill%3D%27%237ab9e6%27%20fill-opacity%3D%27.18%27%20stroke%3D%27none%27/%3E%0A%20%20%3Cpath%20d%3D%27M-245%2030%20L-310%2058%20L-280%2070%20L-205%2050%20Z%27%20fill%3D%27%2379b8e6%27%20fill-opacity%3D%27.10%27%20stroke%3D%27none%27/%3E%0A%20%20%3Cpath%20d%3D%27M245%2030%20L310%2058%20L280%2070%20L205%2050%20Z%27%20fill%3D%27%2379b8e6%27%20fill-opacity%3D%27.10%27%20stroke%3D%27none%27/%3E%0A%3C/g%3E%0A%3Cg%20stroke%3D%27%2361bdf8%27%20stroke-opacity%3D%27.08%27%20fill%3D%27none%27%3E%0A%20%20%3Ccircle%20cx%3D%27600%27%20cy%3D%27260%27%20r%3D%27210%27/%3E%0A%20%20%3Ccircle%20cx%3D%27600%27%20cy%3D%27260%27%20r%3D%27300%27/%3E%0A%20%20%3Cline%20x1%3D%27600%27%20y1%3D%270%27%20x2%3D%27600%27%20y2%3D%27500%27/%3E%0A%20%20%3Cline%20x1%3D%27180%27%20y1%3D%27260%27%20x2%3D%271020%27%20y2%3D%27260%27/%3E%0A%3C/g%3E%0A%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:center 56%;
+    background-size:min(1180px, 96vw) auto;
+    opacity:.74;
+    filter:drop-shadow(0 24px 40px rgba(0,0,0,.32));
+    mask-image:linear-gradient(to bottom, transparent 0%, black 12%, black 78%, transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0%, black 12%, black 78%, transparent 100%);
+  }
+
+  .site-header .logo-wrap::before{
+    content:"";
+    position:fixed;
+    left:50%;
+    top:82px;
+    width:100vw;
+    height:395px;
+    transform:translateX(-50%);
+    z-index:-1;
+    pointer-events:none;
+    background:
+      linear-gradient(to top, rgba(4,16,30,.94) 0%, transparent 40%),
+      radial-gradient(ellipse at 70% 76%, rgba(242,182,61,.18), transparent 18%),
+      radial-gradient(ellipse at 28% 28%, rgba(14,165,233,.10), transparent 18%);
+  }
+
+  .site-header::after{
+    right:3% !important;
+    top:120px !important;
+    width:330px !important;
+    height:330px !important;
+    opacity:.18 !important;
+  }
+
+  .divider::before{
+    width:min(900px,92vw) !important;
+    max-width:900px;
+  }
+
+  .divider::after{
+    backdrop-filter:blur(8px);
+    box-shadow:0 8px 24px rgba(0,0,0,.14), inset 0 0 18px rgba(242,182,61,.04);
+  }
+
+  .card{
+    margin-top:-8px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.025), transparent 20%),
+      linear-gradient(180deg, rgba(13,34,57,.965), rgba(7,25,43,.985)) !important;
+    box-shadow:
+      0 35px 90px rgba(0,0,0,.34),
+      0 -1px 0 rgba(255,255,255,.03),
+      0 0 0 1px rgba(14,165,233,.025) !important;
+  }
+
+  .card::before{
+    height:4px !important;
+    background:linear-gradient(90deg,var(--gold) 0 22%, rgba(242,182,61,.24) 36%, rgba(14,165,233,.16) 68%, transparent 100%) !important;
+  }
+
+  @media(max-width:760px){
+    .site-header .logo-wrap::after,
+    .site-header .logo-wrap::before{
+      top:78px;
+      height:385px;
+    }
+    .site-header .logo-wrap::after{
+      background-size:920px auto;
+      background-position:57% 58%;
+      opacity:.58;
+    }
+  }
+
+  @media(max-width:430px){
+    .site-header .logo-wrap::after{
+      background-size:760px auto;
+      background-position:61% 60%;
+      opacity:.50;
+    }
+  }
+
+
+  /* ===== IDENTIDAD INSTITUCIONAL FAC + AAAES ===== */
+  .institutional-brandbar{
+    width:min(100%,1040px);
+    height:82px;
+    position:relative;
+    z-index:80;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:18px;
+    padding-right:150px;
+  }
+
+  .brand-unit{
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:11px;
+  }
+
+  .brand-unit img{
+    display:block;
+    width:auto;
+    object-fit:contain;
+    filter:drop-shadow(0 5px 12px rgba(0,0,0,.22));
+  }
+
+  .brand-fac img{height:47px;max-width:105px}
+  .brand-aaaes img{height:49px;max-width:70px}
+
+  .brand-copy{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    line-height:1.05;
+  }
+
+  .brand-copy strong{
+    font-family:var(--head);
+    color:var(--text);
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.11em;
+  }
+
+  .brand-copy span{
+    margin-top:4px;
+    font-family:var(--body);
+    color:var(--text-dim);
+    font-size:9px;
+    letter-spacing:.055em;
+    white-space:nowrap;
+  }
+
+  .brand-separator{
+    width:1px;
+    height:38px;
+    background:linear-gradient(to bottom,transparent,var(--border),transparent);
+    flex:0 0 auto;
+  }
+
+  .brand-fallback{
+    display:none;
+    min-width:46px;
+    height:42px;
+    padding:0 8px;
+    align-items:center;
+    justify-content:center;
+    border:1px solid rgba(242,182,61,.55);
+    border-radius:7px;
+    color:var(--gold);
+    font-family:var(--head);
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.08em;
+  }
+
+  /* El header comienza después de la nueva barra institucional */
+  .site-header{
+    min-height:448px !important;
+  }
+
+  .site-header .logo-wrap{
+    display:none !important;
+  }
+
+  .site-header::before{
+    top:0 !important;
+  }
+
+  .site-header .logo-wrap::after,
+  .site-header .logo-wrap::before{
+    top:82px !important;
+  }
+
+  /* Como logo-wrap queda oculto, movemos el avión al propio hero */
+  .site-header{
+    background-image:
+      linear-gradient(90deg,rgba(3,14,27,.34),transparent 40%),
+      var(--aircraft-none);
+  }
+
+  /* Avión SVG decorativo sobre el hero */
+  .site-header > .divider{
+    z-index:5;
+  }
+
+  @media(max-width:760px){
+    .institutional-brandbar{
+      height:78px;
+      gap:10px;
+      padding-right:115px;
+    }
+    .brand-fac img{height:38px;max-width:78px}
+    .brand-aaaes img{height:40px;max-width:55px}
+    .brand-copy strong{font-size:11px;letter-spacing:.07em}
+    .brand-copy span{
+      font-size:7px;
+      max-width:150px;
+      white-space:normal;
+      line-height:1.15;
+    }
+    .brand-separator{height:31px}
+    .site-header{min-height:430px !important}
+  }
+
+  @media(max-width:520px){
+    .institutional-brandbar{
+      padding-right:94px;
+      gap:8px;
+    }
+    .brand-copy{display:none}
+    .brand-separator{height:28px}
+    .brand-fac img{height:39px;max-width:84px}
+    .brand-aaaes img{height:42px;max-width:58px}
+  }
+
+
+    .site-header .divider::selection{background:var(--gold);color:#071426}
+    .site-header{overflow:visible}
+    .site-header > .divider::marker{display:none}
+    .site-header::after{
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f2b63d' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+      background-repeat:no-repeat !important;
+      background-position:center 54% !important;
+      background-size:min(1120px,96vw) auto !important;
+      border-radius:0 !important;
+      border:0 !important;
+      width:100vw !important;
+      height:390px !important;
+      right:auto !important;
+      left:50% !important;
+      top:0 !important;
+      transform:translateX(-50%) !important;
+      opacity:.58 !important;
+      mask-image:linear-gradient(to bottom,transparent 0%,black 10%,black 78%,transparent 100%);
+      -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 10%,black 78%,transparent 100%);
+    }
+    
+</style>
+
+
+
+</head>
+<body>
+
+  <div class="institutional-brandbar" aria-label="Identidad institucional">
+    <div class="brand-unit brand-fac">
+      <img src="logo_fac.png" alt="Fuerza Aeroespacial Colombiana"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="brand-fallback">FAC</div>
+      <div class="brand-copy">
+        <strong>FUERZA AEROESPACIAL</strong>
+        <span>COLOMBIANA</span>
+      </div>
+    </div>
+
+    <div class="brand-separator" aria-hidden="true"></div>
+
+    <div class="brand-unit brand-aaaes">
+      <img src="log_aaaes.png" alt="Autoridad Aeronáutica de Aviación de Estado"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="brand-fallback">AAAES</div>
+      <div class="brand-copy">
+        <strong>AAAES</strong>
+        <span>AUTORIDAD AERONÁUTICA DE AVIACIÓN DE ESTADO</span>
+      </div>
+    </div>
+  </div>
+
+
+  <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()">
+    ☀️ Tema Claro
+  </button>
+
+  <header class="site-header">
+    <div class="logo-wrap">
+      <img src="log_aaaes.png" alt="Logo AAAES" onerror="this.style.display='none'">
+      <div>
+        <div class="site-title">PORTAL DE CERTIFICADOS</div>
+        <div class="site-sub">Seminario Básico de Certificación Aeronáutica</div>
+      </div>
+    </div>
+    <div class="divider"><span class="divider-icon">✈</span></div>
+  </header>
+
+  <main class="card">
+
+    <form id="certForm" onsubmit="buscarCertificado(event)" novalidate>
+
+      <div class="field-group">
+        <label for="seminarioInput">
+          <span class="label-num">01</span>
+          Nombre del Seminario
+        </label>
+        <div class="search-select-container">
+          <input type="text" id="seminarioInput" class="search-select-input" 
+                 placeholder="— Buscando seminarios disponibles… —" 
+                 autocomplete="off" readonly required>
+          <div id="seminarioDropdown" class="search-select-dropdown"></div>
+        </div>
+      </div>
+
+      <div class="status-strip" id="repoStatus">
+        <span class="status-dot loading-dot" id="repoDot"></span>
+        <span id="repoMsg">Consultando repositorio…</span>
+      </div>
+
+      <div class="field-group">
+        <label for="identificacion">
+          <span class="label-num">02</span>
+          Número de Cédula
+        </label>
+        <input type="text" id="identificacion"
+               placeholder="Ej: 1234567890"
+               inputmode="numeric"
+               autocomplete="off"
+               required>
+      </div>
+
+      <button type="submit" class="submit-btn" id="searchBtn" disabled>
+        &#9654;&nbsp;&nbsp;Buscar Certificado
+      </button>
+    </form>
+
+    <div class="loading-bar" id="loadingBar">
+      <div class="loading-bar-fill"></div>
+    </div>
+
+    <div class="result success" id="successResult">
+      <div class="result-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Certificado Encontrado
+      </div>
+      <div class="result-body">
+        <div class="pdf-wrap">
+          <iframe id="pdfFrame" src="" title="Vista previa del certificado"></iframe>
+        </div>
+        <a href="" class="download-btn" id="downloadLink" download>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar Certificado
+        </a>
+      </div>
+    </div>
+
+    <div class="result error" id="errorResult">
+      <div class="result-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Certificado No Encontrado
+      </div>
+      <div class="result-body">
+        <p style="font-size:14px;color:var(--text-dim);margin-bottom:10px;">
+          No se encontró un certificado para los datos ingresados. Verifica:
+        </p>
+        <ul class="error-list">
+          <li>Que el número de identificación sea correcto</li>
+          <li>Que hayas seleccionado el seminario correcto</li>
+          <li>Que hayas completado el seminario en la fecha seleccionada</li>
+          <li>Si el problema persiste, contacta al administrador</li>
+        </ul>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <a href="https://aaaes.fac.mil.co/" target="_blank" rel="noopener noreferrer">
+      AAAES &nbsp;·&nbsp; CERTIFICACIÓN AERONÁUTICA &nbsp;·&nbsp; SISTEMA DE CONSULTA
+    </a>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // ─── Configuración URL Estática Base ─────────────────────────────────────
+    const BASE_URL = 'https://secae.github.io/seminario/';
+    let todosLosSeminarios = [];
+    let seminarioSeleccionado = "";
+    let modoBusquedaActual = "pdf"; 
+
+    // ─── Lógica Tema Claro/Oscuro ───────────────────────────────────────────
+    function toggleTheme() {
+      const body = document.body;
+      const btn = document.getElementById('themeToggleBtn');
+      body.classList.toggle('light-theme');
+      
+      if (body.classList.contains('light-theme')) {
+        btn.innerHTML = '🌙 Tema Oscuro';
+      } else {
+        btn.innerHTML = '☀️ Tema Claro';
+      }
+    }
+
+    // ─── Inicialización del Buscador / Filtro Desplegable ────────────────────
+    const semInput = document.getElementById('seminarioInput');
+    const semDropdown = document.getElementById('seminarioDropdown');
+
+    semInput.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (todosLosSeminarios.length > 0) {
+        renderDropdownOptions(todosLosSeminarios);
+        semDropdown.style.display = 'block';
+        semInput.readOnly = false;
+        semInput.select();
+      }
+    });
+
+    semInput.addEventListener('input', () => {
+      const busqueda = semInput.value.toLowerCase().trim();
+      const filtrados = todosLosSeminarios.filter(s => s.toLowerCase().includes(busqueda));
+      renderDropdownOptions(filtrados);
+    });
+
+    document.addEventListener('click', () => {
+      semDropdown.style.display = 'none';
+      if (seminarioSeleccionado) {
+        semInput.value = seminarioSeleccionado;
+      }
+      semInput.readOnly = true;
+    });
+
+    function renderDropdownOptions(lista) {
+      semDropdown.innerHTML = '';
+      if (lista.length === 0) {
+        const noRes = document.createElement('div');
+        noRes.className = 'search-select-option no-results';
+        noRes.textContent = 'No se encontraron seminarios';
+        semDropdown.appendChild(noRes);
+        return;
+      }
+      lista.forEach(sem => {
+        const opt = document.createElement('div');
+        opt.className = 'search-select-option';
+        opt.textContent = sem;
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          seleccionarSeminario(sem);
+        });
+        semDropdown.appendChild(opt);
+      });
+    }
+
+    async function seleccionarSeminario(nombre) {
+      seminarioSeleccionado = nombre;
+      semInput.value = nombre;
+      semDropdown.style.display = 'none';
+      semInput.readOnly = true;
+      limpiarResultados();
+      await analizarModoCarpetaEstática(nombre);
+    }
+
+    async function analizarModoCarpetaEstática(nombre) {
+      const encodedSeminario = encodeURIComponent(nombre);
+      const csvUrl = `${BASE_URL}${encodedSeminario}/nombres.csv`;
+
+      try {
+        const res = await fetch(csvUrl);
+        if (res.ok) {
+          modoBusquedaActual = "csv";
+          // La inspección pormenorizada del CSV ahora se despliega de forma dinámica al procesar el motor
+        } else {
+          modoBusquedaActual = "pdf";
+          console.log(`[Sistema AAAES] Modo de búsqueda por diploma PDF según el nombre de seminario seleccionado: "${nombre}"`);
+        }
+      } catch (e) {
+        modoBusquedaActual = "pdf";
+        console.log(`[Sistema AAAES] Modo de búsqueda por diploma PDF según el nombre de seminario seleccionado: "${nombre}"`);
+      }
+    }
+
+    // ─── Carga de Directorios desde la API de GitHub ─────────────────────────
+    (async function loadSeminars() {
+      const dot = document.getElementById('repoDot');
+      const msg = document.getElementById('repoMsg');
+      const btn = document.getElementById('searchBtn');
+      const REPO_API = 'https://api.github.com/repos/secae/seminario/contents/';
+
+      try {
+        const res = await fetch(REPO_API, {
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const items = await res.json();
+
+        todosLosSeminarios = items
+          .filter(item => item.type === 'dir' && !item.name.startsWith('-'))
+          .map(item => item.name)
+          .sort((a, b) => b.localeCompare(a)); 
+
+        if (todosLosSeminarios.length === 0) {
+          semInput.placeholder = '— Sin seminarios disponibles —';
+          dot.className = 'status-dot fail';
+          msg.textContent = 'No se encontraron carpetas válidas en el repositorio.';
+          return;
+        }
+
+        semInput.placeholder = '— Selecciona o busca un seminario —';
+        seleccionarSeminario(todosLosSeminarios[0]);
+
+        dot.className = 'status-dot ok';
+        msg.textContent = `${todosLosSeminarios.length} opción(es) disponible(s) · Sincronizado con Repositorio`;
+        btn.disabled = false;
+
+      } catch (err) {
+        console.warn('GitHub API error:', err);
+        todosLosSeminarios = ['2026', '2025', '2024'];
+        semInput.placeholder = '— Selecciona o busca un seminario —';
+        seleccionarSeminario(todosLosSeminarios[0]);
+
+        dot.className = 'status-dot fail';
+        msg.textContent = 'No se pudo consultar el repositorio · Opciones predeterminadas';
+        btn.disabled = false;
+      }
+    })();
+
+    // ─── Sanitización y Normalización Avanzada del Parser CSV ───────────────
+    function normalizarId(str) {
+      return (str || '').toString().trim().replace(/[^0-9A-Za-z]/g, '').toUpperCase();
+    }
+
+    // Procesa cadenas removiendo retornos de carro invisibles (\r)
+    function parsearCSV(texto) {
+      const lineas = texto.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      return lineas.map(linea => {
+        return linea.split(';').map(campo => {
+          return campo.replace(/^["'\uFEFF]|\r|["']$/g, '').trim();
+        });
+      });
+    }
+
+    // ─── Motor Gráfico para el Caso 2 (Imagen + CSV) ─────────────────────────
+    async function generarDiplomaDesdeImagen(seminario, id) {
+      const encodedSeminario = encodeURIComponent(seminario);
+      const csvUrl = `${BASE_URL}${encodedSeminario}/nombres.csv`;
+      const imgUrl = `${BASE_URL}${encodedSeminario}/diploma.png`;
+
+      const csvRes = await fetch(csvUrl);
+      if (!csvRes.ok) return null;
+      const csvTexto = await csvRes.text();
+      
+      const filas = parsearCSV(csvTexto);
+      if (filas.length === 0) return null;
+
+      let desfaseGlobalY = 0;
+      let filaConfiguracion = null;
+
+      // Escaneo Dinámico Inteligente: Busca el desfase en todo el archivo, no solo en la primera línea
+      for (let i = 0; i < filas.length; i++) {
+        if (filas[i].length >= 2 && filas[i][0].toLowerCase().includes('desfase')) {
+          filaConfiguracion = filas[i];
+          const valorDesfase = parseInt(filas[i][1], 10);
+          if (!isNaN(valorDesfase)) desfaseGlobalY = valorDesfase;
+          break;
+        }
+      }
+
+      // Si no se encontró explícitamente la palabra 'desfase', mapea los literales de la primera línea real de depuración
+      const labelCol1 = filaConfiguracion ? filaConfiguracion[0] : filas[0][0];
+      const labelCol2 = filaConfiguracion ? filaConfiguracion[1] : filas[0][1];
+
+      console.log(`[Sistema AAAES] Modo de búsqueda por lista CSV según el nombre de seminario seleccionado: "${seminario}" (Desfase Vertical Configurado: ${labelCol1} ${labelCol2} ${desfaseGlobalY}px)`);
+
+      const idBuscado = normalizarId(id);
+      let registro = null;
+
+      // Buscar al alumno omitiendo las filas de control
+      for (let i = 0; i < filas.length; i++) {
+        const fila = filas[i];
+        if (fila[0].toLowerCase().includes('desfase') || fila[0].toLowerCase().includes('cedula') || fila[0].toLowerCase().includes('identificacion')) {
+          continue; // Evita falsos positivos con cabeceras o filas de configuración
+        }
+        if (fila.length >= 1 && normalizarId(fila[0]) === idBuscado) {
+          registro = fila;
+          break;
+        }
+      }
+      if (!registro) return null;
+
+      const cedula = (registro[0] || '').toString().trim();
+      const nombre = (registro[1] || '').toString().trim();
+      if (!nombre) return null;
+
+      const img = await new Promise((resolve, reject) => {
+        const imagen = new Image();
+        imagen.crossOrigin = 'anonymous';
+        imagen.onload = () => resolve(imagen);
+        imagen.onerror = () => reject(new Error('Error al leer diploma.png'));
+        imagen.src = imgUrl;
+      });
+
+      if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch (e) {}
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const nombreSize = Math.round(canvas.width * 0.042);
+      const cedulaSize  = Math.round(canvas.width * 0.024);
+      const cx = canvas.width / 2;
+      const cy = (canvas.height / 2) + desfaseGlobalY;
+
+      ctx.fillStyle = '#111111';
+      ctx.font = `700 ${nombreSize}px 'Rajdhani', Arial, sans-serif`;
+      ctx.fillText(nombre.toUpperCase(), cx, cy);
+
+      // Espaciado interlineal optimizado exactamente a 0.8 como fue requerido
+      ctx.font = `400 ${cedulaSize}px 'Share Tech Mono', monospace`;
+      ctx.fillText(`C.C. ${cedula}`, cx, cy + Math.round(nombreSize * 0.8));
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: canvas.width >= canvas.height ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+      pdf.addImage(dataUrl, 'JPEG', 0, 0, canvas.width, canvas.height);
+      const blob = pdf.output('blob');
+      const url = URL.createObjectURL(blob);
+
+      return { url };
+    }
+
+    function mostrarExito() {
+      document.getElementById('successResult').style.display = 'block';
+      document.getElementById('errorResult').style.display   = 'none';
+      setTimeout(() => document.getElementById('successResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
+    }
+
+    function mostrarError() {
+      document.getElementById('successResult').style.display = 'none';
+      document.getElementById('errorResult').style.display   = 'block';
+      setTimeout(() => document.getElementById('errorResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
+    }
+
+    function limpiarResultados() {
+      document.getElementById('successResult').style.display = 'none';
+      document.getElementById('errorResult').style.display   = 'none';
+    }
+
+    // ─── Ejecución del Buscador de Certificados ─────────────────────────────
+    async function buscarCertificado(event) {
+      event.preventDefault();
+
+      const seminario     = seminarioSeleccionado;
+      const id            = document.getElementById('identificacion').value.trim();
+      const btn           = document.getElementById('searchBtn');
+      const loadingBar    = document.getElementById('loadingBar');
+      const pdfFrame      = document.getElementById('pdfFrame');
+      const downloadLink  = document.getElementById('downloadLink');
+
+      if (!seminario || !id) return;
+
+      limpiarResultados();
+      loadingBar.classList.add('visible');
+      btn.disabled = true;
+      btn.textContent = 'Buscando…';
+
+      const encodedSeminario = encodeURIComponent(seminario);
+      const pdfUrl = `${BASE_URL}${encodedSeminario}/${id}.pdf`;
+
+      try {
+        if (modoBusquedaActual === "pdf") {
+          const response = await fetch(pdfUrl, { method: 'HEAD' });
+          if (response.ok) {
+            pdfFrame.src           = pdfUrl;
+            downloadLink.href      = pdfUrl;
+            downloadLink.download  = `Certificado_${id}_${seminario}.pdf`;
+            mostrarExito();
+            return;
+          }
+        } else {
+          const generado = await generarDiplomaDesdeImagen(seminario, id);
+          if (generado) {
+            pdfFrame.src          = generado.url;
+            downloadLink.href     = generado.url;
+            downloadLink.download = `Certificado_${id}_${seminario}.pdf`;
+            mostrarExito();
+            return;
+          }
+        }
+        
+        if (modoBusquedaActual === "pdf") {
+          const generado = await generarDiplomaDesdeImagen(seminario, id);
+          if (generado) {
+            pdfFrame.src          = generado.url;
+            downloadLink.href     = generado.url;
+            downloadLink.download = `Certificado_${id}_${seminario}.pdf`;
+            mostrarExito();
+            return;
+          }
+        } else {
+          const response = await fetch(pdfUrl, { method: 'HEAD' });
+          if (response.ok) {
+            pdfFrame.src           = pdfUrl;
+            downloadLink.href      = pdfUrl;
+            downloadLink.download  = `Certificado_${id}_${seminario}.pdf`;
+            mostrarExito();
+            return;
+          }
+        }
+
+        mostrarError();
+      } catch (err) {
+        console.warn('Error en la resolución del archivo:', err);
+        mostrarError();
+      } finally {
+        loadingBar.classList.remove('visible');
+        btn.disabled = false;
+        btn.innerHTML = '&#9654;&nbsp;&nbsp;Buscar Certificado';
+      }
+    }
+
+    document.getElementById('identificacion').addEventListener('input', limpiarResultados);
+  </script>
+</body>
+</html>
