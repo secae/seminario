@@ -1109,6 +1109,14 @@
         format: [canvas.width, canvas.height]
       });
       pdf.addImage(dataUrl, 'JPEG', 0, 0, canvas.width, canvas.height);
+      // Asigna los metadatos internos del PDF
+      const nombreArchivoDeseado = `Certificado_${id}_${seminario}`;
+      pdf.setProperties({
+        title: nombreArchivoDeseado,
+        subject: 'Certificado de Seminario Aeronáutico',
+        author: 'Autoridad Aeronáutica de Aviación de Estado - SECAE',
+        creator: 'Portal de Certificados AAAES'
+      });
       const blob = pdf.output('blob');
       const url = URL.createObjectURL(blob);
 
