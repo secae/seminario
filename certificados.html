@@ -748,6 +748,67 @@
     }
   }
 
+
+  /* ===== TEMA CLARO: sobrescribe el hero y la tarjeta oscuros ===== */
+  body.light-theme{
+    --gold:#9a5b00;
+    --gold-2:#d99a1e;
+    --green:#15803d;
+    --red:#b91c1c;
+    --amber:#b45309;
+  }
+  body.light-theme .site-header::before{
+    background:
+      linear-gradient(90deg,rgba(255,255,255,.96) 0%,rgba(244,249,253,.80) 38%,rgba(232,242,250,.45) 68%,rgba(244,249,253,.85) 100%),
+      radial-gradient(circle at 68% 38%,rgba(14,165,233,.16),transparent 30%),
+      linear-gradient(180deg,#e9f2f9 0%,#dbe9f4 60%,#e9f2f9 100%) !important;
+    border-bottom:1px solid rgba(14,116,170,.22);
+    box-shadow:inset 0 -60px 80px rgba(255,255,255,.55);
+  }
+  body.light-theme .site-header .logo-wrap::before{
+    background:
+      linear-gradient(to top,rgba(238,244,249,.92) 0%,transparent 40%),
+      radial-gradient(ellipse at 70% 76%,rgba(242,182,61,.14),transparent 18%),
+      radial-gradient(ellipse at 28% 28%,rgba(14,165,233,.08),transparent 18%);
+  }
+  body.light-theme .site-header .logo-wrap::after{
+    opacity:.55;
+    filter:brightness(.55) saturate(1.3);
+  }
+  body.light-theme .site-header::after{border-color:rgba(14,116,170,.35);opacity:.28 !important}
+  body.light-theme .divider::before{
+    color:#0b2238;
+    text-shadow:0 2px 0 rgba(255,255,255,.7);
+  }
+  body.light-theme .divider::after{
+    color:#8a5200;
+    background:rgba(255,255,255,.78);
+    border-color:rgba(154,91,0,.65);
+    box-shadow:0 6px 18px rgba(29,51,71,.10);
+  }
+  body.light-theme .card{
+    border-color:var(--border);
+    background:linear-gradient(180deg,#ffffff,#f6f9fc) !important;
+    box-shadow:0 26px 65px rgba(29,51,71,.15),0 0 0 1px rgba(14,165,233,.05) !important;
+  }
+  body.light-theme .card::after{border-color:rgba(14,165,233,.14)}
+  body.light-theme label .label-num{background:rgba(154,91,0,.08);border-color:rgba(154,91,0,.55)}
+  body.light-theme input[type="text"]{background:#fff;border-color:var(--border);color:var(--text)}
+  body.light-theme input[type="text"]:hover{border-color:#7f9bb3}
+  body.light-theme input[type="text"]:focus{box-shadow:0 0 0 3px rgba(154,91,0,.14)}
+  body.light-theme input[type="text"]::placeholder{color:#6b8196}
+  body.light-theme .search-select-dropdown{box-shadow:0 18px 42px rgba(29,51,71,.18)}
+  body.light-theme .search-select-option{border-bottom-color:rgba(89,116,139,.15)}
+  body.light-theme .search-select-option:hover{background:#eaf2f8}
+  body.light-theme .status-strip{background:rgba(14,165,233,.06);border-color:rgba(89,116,139,.28)}
+  body.light-theme .loading-bar{background:#d3e0ea}
+  body.light-theme .result{background:#fff}
+  body.light-theme .result.success{background:rgba(21,128,61,.05);border-color:rgba(21,128,61,.35)}
+  body.light-theme .result.error{background:rgba(185,28,28,.04);border-color:rgba(185,28,28,.35)}
+  body.light-theme .error-list li{color:var(--text)}
+  body.light-theme .pdf-wrap{box-shadow:0 10px 26px rgba(29,51,71,.14)}
+  body.light-theme .theme-toggle-btn{color:var(--text);background:rgba(255,255,255,.9)}
+  body.light-theme .site-footer a{color:var(--text-dim)}
 </style>
 
 
@@ -795,12 +856,15 @@
       <div class="field-group">
         <label for="identificacion">
           <span class="label-num">02</span>
-          Número de Cédula
+          Número de Identificación
         </label>
         <input type="text" id="identificacion"
-               placeholder="Ej: 1234567890"
-               inputmode="numeric"
+               placeholder="Cédula o pasaporte. Ej: 1234567890 / AB123456"
+               inputmode="text"
+               autocapitalize="characters"
                autocomplete="off"
+               spellcheck="false"
+               maxlength="30"
                required>
       </div>
 
@@ -861,7 +925,7 @@
     const BASE_URL = 'https://secae.github.io/seminario/';
     let todosLosSeminarios = [];
     let seminarioSeleccionado = "";
-    let modoBusquedaActual = "pdf"; 
+    
 
     // ─── Lógica Tema Claro/Oscuro ───────────────────────────────────────────
     function toggleTheme() {
@@ -931,26 +995,6 @@
       semDropdown.style.display = 'none';
       semInput.readOnly = true;
       limpiarResultados();
-      await analizarModoCarpetaEstática(nombre);
-    }
-
-    async function analizarModoCarpetaEstática(nombre) {
-      const encodedSeminario = encodeURIComponent(nombre);
-      const csvUrl = `${BASE_URL}${encodedSeminario}/nombres.csv`;
-
-      try {
-        const res = await fetch(csvUrl);
-        if (res.ok) {
-          modoBusquedaActual = "csv";
-          // La inspección pormenorizada del CSV ahora se despliega de forma dinámica al procesar el motor
-        } else {
-          modoBusquedaActual = "pdf";
-          console.log(`[Sistema AAAES] Modo de búsqueda por diploma PDF según el nombre de seminario seleccionado: "${nombre}"`);
-        }
-      } catch (e) {
-        modoBusquedaActual = "pdf";
-        console.log(`[Sistema AAAES] Modo de búsqueda por diploma PDF según el nombre de seminario seleccionado: "${nombre}"`);
-      }
     }
 
     // ─── Carga de Directorios desde la API de GitHub ─────────────────────────
@@ -1098,7 +1142,8 @@
 
       // Espaciado interlineal optimizado exactamente a 0.8 como fue requerido
       ctx.font = `400 ${cedulaSize}px 'Share Tech Mono', monospace`;
-      ctx.fillText(`C.C. ${cedula}`, cx, cy + Math.round(nombreSize * 0.8));
+      const prefijoId = /^\d+$/.test(cedula) ? 'C.C.' : 'ID';
+      ctx.fillText(`${prefijoId} ${cedula}`, cx, cy + Math.round(nombreSize * 0.8));
 
       const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
 
@@ -1140,7 +1185,23 @@
       document.getElementById('errorResult').style.display   = 'none';
     }
 
+    // ─── Búsqueda directa del PDF (#identificacion.pdf) ─────────────────────
+    // GitHub Pages distingue mayúsculas/minúsculas, por eso se prueban variantes.
+    async function buscarPdfDirecto(seminario, id) {
+      const encodedSeminario = encodeURIComponent(seminario);
+      const variantes = [...new Set([id, id.toUpperCase(), id.toLowerCase()])];
+      for (const v of variantes) {
+        const pdfUrl = `${BASE_URL}${encodedSeminario}/${encodeURIComponent(v)}.pdf`;
+        try {
+          const response = await fetch(pdfUrl, { method: 'HEAD' });
+          if (response.ok) return pdfUrl;
+        } catch (e) { /* se intenta la siguiente variante */ }
+      }
+      return null;
+    }
+
     // ─── Ejecución del Buscador de Certificados ─────────────────────────────
+    // Orden: 1) PDF existente {id}.pdf  2) si no existe, generarlo desde nombres.csv + diploma.png
     async function buscarCertificado(event) {
       event.preventDefault();
 
@@ -1158,48 +1219,24 @@
       btn.disabled = true;
       btn.textContent = 'Buscando…';
 
-      const encodedSeminario = encodeURIComponent(seminario);
-      const pdfUrl = `${BASE_URL}${encodedSeminario}/${id}.pdf`;
+      const mostrar = (url) => {
+        pdfFrame.src          = url;
+        downloadLink.href     = url;
+        downloadLink.download = `Certificado_${id}_${seminario}.pdf`;
+        mostrarExito();
+      };
 
       try {
-        if (modoBusquedaActual === "pdf") {
-          const response = await fetch(pdfUrl, { method: 'HEAD' });
-          if (response.ok) {
-            pdfFrame.src           = pdfUrl;
-            downloadLink.href      = pdfUrl;
-            downloadLink.download  = `Certificado_${id}_${seminario}.pdf`;
-            mostrarExito();
-            return;
-          }
-        } else {
+        // 1) PDF ya existente (diplomas de profesores, otros tipos, etc.)
+        const pdfUrl = await buscarPdfDirecto(seminario, id);
+        if (pdfUrl) { mostrar(pdfUrl); return; }
+
+        // 2) Generar desde el CSV
+        try {
           const generado = await generarDiplomaDesdeImagen(seminario, id);
-          if (generado) {
-            pdfFrame.src          = generado.url;
-            downloadLink.href     = generado.url;
-            downloadLink.download = `Certificado_${id}_${seminario}.pdf`;
-            mostrarExito();
-            return;
-          }
-        }
-        
-        if (modoBusquedaActual === "pdf") {
-          const generado = await generarDiplomaDesdeImagen(seminario, id);
-          if (generado) {
-            pdfFrame.src          = generado.url;
-            downloadLink.href     = generado.url;
-            downloadLink.download = `Certificado_${id}_${seminario}.pdf`;
-            mostrarExito();
-            return;
-          }
-        } else {
-          const response = await fetch(pdfUrl, { method: 'HEAD' });
-          if (response.ok) {
-            pdfFrame.src           = pdfUrl;
-            downloadLink.href      = pdfUrl;
-            downloadLink.download  = `Certificado_${id}_${seminario}.pdf`;
-            mostrarExito();
-            return;
-          }
+          if (generado) { mostrar(generado.url); return; }
+        } catch (e) {
+          console.warn('No se pudo generar desde CSV:', e);
         }
 
         mostrarError();
@@ -1213,6 +1250,11 @@
       }
     }
 
+    // Solo letras y números (cédula o pasaporte); elimina espacios y símbolos
+    document.getElementById('identificacion').addEventListener('input', function () {
+      const limpio = this.value.replace(/[^0-9A-Za-z]/g, '');
+      if (limpio !== this.value) this.value = limpio;
+    });
     document.getElementById('identificacion').addEventListener('input', limpiarResultados);
   </script>
 </body>
